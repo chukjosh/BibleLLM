@@ -1,4 +1,11 @@
+# Core deep learning framework
 torch
+
+# Progress bar for training
 tqdm
+
+# Web framework for API
 fastapi
+
+# ASGI server for running FastAPI
 uvicorn

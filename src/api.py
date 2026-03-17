@@ -1,3 +1,10 @@
+"""
+Bible LLM FastAPI Implementation
+--------------------------------
+This module defines the REST API for the Bible LLM project.
+It handles model loading on startup and provides an endpoint for text generation.
+"""
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import torch
