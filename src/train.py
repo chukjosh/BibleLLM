@@ -22,14 +22,15 @@ dropout = 0.2
 
 def main():
     parser = argparse.ArgumentParser()
+    # Allow overiding max iterations via CLI
     parser.add_argument("--max_iters", type=int, default=max_iters)
     args = parser.parse_args()
 
-    # Load data
+    # Initialize Dataset
     dataset_path = os.path.join('datasets', 'kjv.txt')
     dataset = BibleDataset(dataset_path, block_size)
     
-    # Model
+    # Initialize Model with CPU-optimized hyperparameters
     model = CharacterTransformer(
         vocab_size=dataset.vocab_size, 
         n_embd=n_embd, 
@@ -40,34 +41,39 @@ def main():
     )
     model.to(device)
     
-    # Optimizer
+    # Use AdamW optimizer: Decoupled Weight Decay Regularization
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate)
     
-    # Simple training loop
     print(f"Starting training for {args.max_iters} iterations on {device}...")
     
-    # We'll use a simple generator to get batches
+    # Helper to fetch a random batch of data
     def get_batch():
+        # Generate random start indices for each sample in the batch
         ix = torch.randint(len(dataset), (batch_size,))
+        # Stack the input-target pairs into tensors
         x = torch.stack([dataset[i][0] for i in ix])
         y = torch.stack([dataset[i][1] for i in ix])
         return x.to(device), y.to(device)
 
+    # Standard training loop
     for iter in range(args.max_iters):
-        # Sample a batch
+        # Get next batch
         xb, yb = get_batch()
 
-        # Evaluate the loss
+        # Forward pass: compute logits and cross-entropy loss
         logits, loss = model(xb, yb)
-        optimizer.zero_grad(set_to_none=True)
+        
+        # Backward pass: compute gradients and update weights
+        optimizer.zero_grad(set_to_none=True) # set_to_none=True is slightly more efficient
         loss.backward()
         optimizer.step()
 
-        # Progress reporting
+        # Report training progress
         if iter % eval_interval == 0 or iter == args.max_iters - 1:
             print(f"step {iter}: loss {loss.item():.4f}")
 
-    # Save the model
+    # Save the model state and required metadata (vocabulary and architecture info)
+    # This ensures everything needed for generation is in one file.
     torch.save({
         'model_state_dict': model.state_dict(),
         'vocab_size': dataset.vocab_size,
