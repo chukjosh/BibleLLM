@@ -34,3 +34,22 @@ To generate text using the trained model, run:
 ```bash
 python src/generate.py
 ```
+
+## API (FastAPI)
+
+You can also run a web server to interact with the model via a REST API:
+
+1. **Start the server**:
+   ```bash
+   python main.py
+   ```
+   By default, this runs on `http://127.0.0.1:8000`.
+
+2. **Generate text via API**:
+   You can use `curl` or any API client to POST to `/generate`:
+   ```bash
+   curl -X POST "http://127.0.0.1:8000/generate" \
+        -H "Content-Type: application/json" \
+        -d '{"prompt": "In the beginning", "max_tokens": 50}'
+   ```
+   Access `http://127.0.0.1:8000/docs` in your browser for the Swagger documentation.
