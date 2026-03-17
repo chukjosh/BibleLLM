@@ -1,8 +1,8 @@
 import torch
 import torch.optim as optim
 import os
-from .dataset import BibleDataset
-from .model import CharacterTransformer
+from dataset import BibleDataset
+from model import CharacterTransformer
 
 # Hyperparameters for CPU-friendly training
 DEFAULT_CONFIG = {

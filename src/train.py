@@ -1,5 +1,7 @@
-from .train_utils import train_model
+from train_utils import train_model
 import argparse
+from dataset import BibleDataset
+from model import CharacterTransformer
 
 def main():
     parser = argparse.ArgumentParser()

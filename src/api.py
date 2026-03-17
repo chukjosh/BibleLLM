@@ -10,8 +10,8 @@ from pydantic import BaseModel
 import torch
 import os
 import threading
-from .model import CharacterTransformer
-from .train_utils import train_model
+from model import CharacterTransformer
+from train_utils import train_model
 
 # Initialize FastAPI app
 app = FastAPI(title="Bible LLM API", description="API for generating and training Biblical-style text")

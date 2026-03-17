@@ -7,6 +7,11 @@ It uses 'uvicorn' to host the FastAPI application defined in 'src/api.py'.
 
 import uvicorn
 import argparse
+import sys
+import os
+
+# Add the 'src' directory to the path so that imports within api.py work correctly
+sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
 def main():
     # Configure command-line arguments to allow host/port flexibility
@@ -21,9 +26,8 @@ def main():
     print("Press Ctrl+C to stop.")
     
     # Run the uvicorn server. 
-    # The 'src.api:app' string points to the 'app' object inside 'src/api.py'.
-    # reload=False is safer for production; set to True during development to auto-restart on code changes.
-    uvicorn.run("src.api:app", host=args.host, port=args.port, reload=False)
+    # Since 'src' is in sys.path, we can just use 'api:app'.
+    uvicorn.run("api:app", host=args.host, port=args.port, reload=False)
 
 if __name__ == "__main__":
     main()
