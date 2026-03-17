@@ -52,4 +52,16 @@ You can also run a web server to interact with the model via a REST API:
         -H "Content-Type: application/json" \
         -d '{"prompt": "In the beginning", "max_tokens": 50}'
    ```
-   Access `http://127.0.0.1:8000/docs` in your browser for the Swagger documentation.
+3. **Manage training via API**:
+   Trigger training:
+   ```bash
+   curl -X POST "http://127.0.0.1:8000/train" \
+        -H "Content-Type: application/json" \
+        -d '{"max_iters": 100}'
+   ```
+   Check status:
+   ```bash
+   curl -X GET "http://127.0.0.1:8000/status"
+   ```
+
+Access `http://127.0.0.1:8000/docs` in your browser for the full interactive Swagger documentation.
