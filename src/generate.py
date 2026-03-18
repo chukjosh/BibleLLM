@@ -1,7 +1,7 @@
-import torch
 from model import CharacterTransformer
 import os
 import argparse
+from lookup import lookup_verse
 
 # Same hyperparameters as training (loaded from model.pt)
 device = 'cpu'
@@ -12,6 +12,16 @@ def main():
     parser.add_argument("--max_tokens", type=int, default=500, help="How many characters to generate")
     args = parser.parse_args()
 
+    # 1. Try exact lookup first
+    exact_match = lookup_verse(args.prompt)
+    if exact_match:
+        print("-" * 30)
+        print(f"Exact Verse Found: '{args.prompt}'")
+        print("-" * 30)
+        print(exact_match)
+        return
+
+    # 2. Fall back to LLM generation
     # Load the comprehensive model checkpoint
     model_path = 'model.pt'
     if not os.path.exists(model_path):

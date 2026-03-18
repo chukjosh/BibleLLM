@@ -12,6 +12,7 @@ import os
 import threading
 from model import CharacterTransformer
 from train_utils import train_model
+from lookup import lookup_verse
 
 # Initialize FastAPI app
 app = FastAPI(title="Bible LLM API", description="API for generating and training Biblical-style text")
@@ -130,7 +131,14 @@ async def train(request: TrainRequest, background_tasks: BackgroundTasks):
 
 @app.post("/generate", response_model=GenerateResponse)
 async def generate(request: GenerateRequest):
-    """Generate text based on a prompt"""
+    """Generate text based on a prompt (Check for exact verse first)"""
+    
+    # 1. Try exact lookup first
+    exact_match = lookup_verse(request.prompt)
+    if exact_match:
+        return GenerateResponse(prompt=request.prompt, generated_text=exact_match)
+
+    # 2. Fall back to LLM generation
     if model is None:
         raise HTTPException(status_code=503, detail="Model not loaded. Please train or check /status.")
     
