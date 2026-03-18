@@ -182,7 +182,7 @@ async def generate(request: GenerateRequest):
             generated_indices = model.generate(context, max_new_tokens=request.max_tokens)
         
         res_text = decode(generated_indices[0].tolist())
-        return GenerateResponse(prompt=request.prompt, generated_text=res_text)
+        return GenerateResponse(prompt=request.prompt, generated_text=res_text, version=request.version)
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
