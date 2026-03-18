@@ -18,10 +18,11 @@ DEFAULT_CONFIG = {
     "dropout": 0.2
 }
 
-def train_model(max_iters=None, progress_callback=None, version='kjv'):
+def train_model(max_iters=None, progress_callback=None, version='kjv', resume=True):
     """
     Core training function that can be called from CLI or API.
     progress_callback: optional function(iter, loss) for reporting.
+    resume: if True, tries to load existing model_{version}.pt to continue training.
     """
     config = DEFAULT_CONFIG.copy()
     if max_iters is not None:
@@ -41,6 +42,17 @@ def train_model(max_iters=None, progress_callback=None, version='kjv'):
         n_layer=config["n_layer"], 
         dropout=config["dropout"]
     )
+    
+    model_path = f'model_{version}.pt'
+    if resume and os.path.exists(model_path):
+        try:
+            print(f"Resuming training from {model_path}...")
+            checkpoint = torch.load(model_path, map_location=config["device"])
+            # Ensure the checkpoint matches the model architecture
+            model.load_state_dict(checkpoint['model_state_dict'])
+        except Exception as e:
+            print(f"Could not resume from checkpoint: {e}. Starting from scratch.")
+
     model.to(config["device"])
     
     # Optimizer

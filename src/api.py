@@ -31,6 +31,7 @@ class GenerateResponse(BaseModel):
 class TrainRequest(BaseModel):
     max_iters: int = 500
     version: str = "kjv"
+    resume: bool = True
 
 class StatusResponse(BaseModel):
     status: str
@@ -120,7 +121,7 @@ async def get_status():
         version=training_state["version"]
     )
 
-def background_train(max_iters: int, version: str):
+def background_train(max_iters: int, version: str, resume: bool):
     """Background task for training a specific version"""
     global training_state
     try:
@@ -132,7 +133,7 @@ def background_train(max_iters: int, version: str):
             training_state["last_iter"] = iter
             training_state["last_loss"] = loss
         
-        train_model(max_iters=max_iters, progress_callback=update_progress, version=version)
+        train_model(max_iters=max_iters, progress_callback=update_progress, version=version, resume=resume)
         
         # Reload model if it's the one currently active
         load_model(version)
@@ -153,8 +154,8 @@ async def train(request: TrainRequest, background_tasks: BackgroundTasks):
     if not os.path.exists(dataset_path):
         raise HTTPException(status_code=404, detail=f"Dataset for version '{request.version}' not found.")
 
-    background_tasks.add_task(background_train, request.max_iters, request.version)
-    return {"message": f"Training started for version '{request.version}' in background."}
+    background_tasks.add_task(background_train, request.max_iters, request.version, request.resume)
+    return {"message": f"Training started for version '{request.version}' (resume={request.resume}) in background."}
 
 @app.post("/generate", response_model=GenerateResponse)
 async def generate(request: GenerateRequest):

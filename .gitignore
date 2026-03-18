@@ -7,15 +7,17 @@ __pycache__/
 venv/
 ENV/
 env.bak/
-venv.bak/
 
-# Model weights
+# Model weights and checkpoints
 model_*.pt
+checkpoint_*.pt
+
+# Datasets
+datasets/
 
 # IDEs
 .vscode/
 .idea/
 
-# OS generated files
-.DS_Store
-Thumbs.db
+# Local configuration
+.env

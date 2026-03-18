@@ -1,6 +1,13 @@
 # Bible LLM
 
-A lightweight, PyTorch-based character-level Transformer Language Model trained on the King James Version of the Bible (`datasets/kjv.txt`). Optimized for CPU training.
+A lightweight, PyTorch-based character-level Transformer Language Model designed for Biblical-style text generation. Optimized for CPU training and featuring a hybrid search capability for exact verse retrieval.
+
+## Features
+
+- **Hybrid Search**: Automatically detects Bible references (e.g., "Genesis 1:1") and returns exact text from the dataset before falling back to AI generation.
+- **Multi-Version Support**: Specify different Bible versions (KJV, WEB, etc.) for training and generation.
+- **Resumable Training**: Smart checkpoints allow you to pause and resume training sessions without losing progress.
+- **FastAPI Integration**: A fully functional REST API for remote training and text generation.
 
 ## Setup
 
@@ -17,51 +24,52 @@ A lightweight, PyTorch-based character-level Transformer Language Model trained 
    pip install -r requirements.txt
    ```
 
-## Training
+## Datasets
 
-To train the model on `datasets/kjv.txt`, run:
+Place your Bible text files in the `datasets/` directory. Files must be named `{version}.txt` (e.g., `kjv.txt`, `web.txt`).
 
+## Usage
+
+### 1. Training (via CLI)
+
+To train the model on a specific version:
 ```bash
-python src/train.py
+python src/train.py --version kjv --max_iters 5000
+```
+- Use `--no-resume` to start training from scratch instead of continuing from a previous session.
+- Weights are saved to `model_{version}.pt`.
+
+### 2. Generation (via CLI)
+
+Generate text or look up a verse:
+```bash
+python src/generate.py --version kjv --prompt "Genesis 1:1"
+```
+- If the prompt is a citation, it returns the exact verse.
+- Otherwise, it uses the AI model to generate text.
+
+### 3. API (FastAPI)
+
+Run the server:
+```bash
+python main.py
 ```
 
-The training script will save the trained model weights to `model.pt` in the project root.
-
-## Generation
-
-To generate text using the trained model, run:
-
+**Generate Text**:
 ```bash
-python src/generate.py
+curl -X POST "http://127.0.0.1:8000/generate" \
+     -H "Content-Type: application/json" \
+     -d '{"prompt": "In the beginning", "version": "kjv", "max_tokens": 100}'
 ```
 
-## API (FastAPI)
+**Train Model**:
+```bash
+curl -X POST "http://127.0.0.1:8000/train" \
+     -H "Content-Type: application/json" \
+     -d '{"version": "kjv", "max_iters": 500, "resume": true}'
+```
 
-You can also run a web server to interact with the model via a REST API:
-
-1. **Start the server**:
-   ```bash
-   python main.py
-   ```
-   By default, this runs on `http://127.0.0.1:8000`.
-
-2. **Generate text via API**:
-   You can use `curl` or any API client to POST to `/generate`:
-   ```bash
-   curl -X POST "http://127.0.0.1:8000/generate" \
-        -H "Content-Type: application/json" \
-        -d '{"prompt": "In the beginning", "max_tokens": 50}'
-   ```
-3. **Manage training via API**:
-   Trigger training:
-   ```bash
-   curl -X POST "http://127.0.0.1:8000/train" \
-        -H "Content-Type: application/json" \
-        -d '{"max_iters": 100}'
-   ```
-   Check status:
-   ```bash
-   curl -X GET "http://127.0.0.1:8000/status"
-   ```
-
-Access `http://127.0.0.1:8000/docs` in your browser for the full interactive Swagger documentation.
+**Utility Endpoints**:
+- `GET /versions`: List available datasets.
+- `GET /status`: Check current training progress.
+- `http://127.0.0.1:8000/docs`: Interactive Swagger UI.
