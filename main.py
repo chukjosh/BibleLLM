@@ -27,7 +27,7 @@ def main():
     
     # Run the uvicorn server. 
     # Since 'src' is in sys.path, we can just use 'api:app'.
-    uvicorn.run("api:app", host=args.host, port=args.port, reload=False)
+    uvicorn.run("api:app", host=args.host, port=args.port, reload=True)
 
 if __name__ == "__main__":
     main()
