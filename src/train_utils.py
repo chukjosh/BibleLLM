@@ -18,7 +18,7 @@ DEFAULT_CONFIG = {
     "dropout": 0.2
 }
 
-def train_model(max_iters=None, progress_callback=None):
+def train_model(max_iters=None, progress_callback=None, version='kjv'):
     """
     Core training function that can be called from CLI or API.
     progress_callback: optional function(iter, loss) for reporting.
@@ -28,7 +28,8 @@ def train_model(max_iters=None, progress_callback=None):
         config["max_iters"] = max_iters
 
     # Load data
-    dataset_path = os.path.join('datasets', 'kjv.txt')
+    version = version.lower()
+    dataset_path = os.path.join('datasets', f'{version}.txt')
     dataset = BibleDataset(dataset_path, config["block_size"])
     
     # Model
@@ -74,6 +75,6 @@ def train_model(max_iters=None, progress_callback=None):
         'block_size': config["block_size"],
         'n_head': config["n_head"],
         'n_layer': config["n_layer"]
-    }, 'model.pt')
+    }, f'model_{version}.pt')
     
     return last_loss

@@ -1,12 +1,13 @@
 import re
 import os
 
-def lookup_verse(prompt, dataset_path='datasets/kjv.txt'):
+def lookup_verse(prompt, version='kjv'):
     """
     Checks if the prompt is a specific Bible reference (e.g. "Genesis 1:1").
     If so, returns the exact text from the dataset.
     Returns None if no match is found.
     """
+    dataset_path = os.path.join('datasets', f'{version.lower()}.txt')
     # Pattern to match "Book [Optional Number] Chapter:Verse"
     # Examples: "Genesis 1:1", "1 Chronicles 7:23", "John 3:16"
     pattern = r'^([123]?\s?[A-Za-z]+)\s+(\d+):(\d+)$'

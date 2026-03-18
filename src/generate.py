@@ -10,20 +10,22 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--prompt", type=str, default="In the beginning", help="The start of the text generation")
     parser.add_argument("--max_tokens", type=int, default=500, help="How many characters to generate")
+    parser.add_argument("--version", type=str, default="kjv", help="Bible version to use (kjv, etc.)")
     args = parser.parse_args()
 
     # 1. Try exact lookup first
-    exact_match = lookup_verse(args.prompt)
+    exact_match = lookup_verse(args.prompt, version=args.version)
     if exact_match:
         print("-" * 30)
-        print(f"Exact Verse Found: '{args.prompt}'")
+        print(f"Exact Verse Found ({args.version.upper()}): '{args.prompt}'")
         print("-" * 30)
         print(exact_match)
         return
 
     # 2. Fall back to LLM generation
     # Load the comprehensive model checkpoint
-    model_path = 'model.pt'
+    version = args.version.lower()
+    model_path = f'model_{version}.pt'
     if not os.path.exists(model_path):
         print(f"Model file '{model_path}' not found. Please run 'python src/train.py' first.")
         return

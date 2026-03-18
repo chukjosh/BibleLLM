@@ -10,7 +10,7 @@ env.bak/
 venv.bak/
 
 # Model weights
-model.pt
+model_*.pt
 
 # IDEs
 .vscode/
