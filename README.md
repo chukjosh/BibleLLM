@@ -73,3 +73,11 @@ curl -X POST "http://127.0.0.1:8000/train" \
 - `GET /versions`: List available datasets.
 - `GET /status`: Check current training progress.
 - `http://127.0.0.1:8000/docs`: Interactive Swagger UI.
+
+
+### 4. Contribution
+
+To contribute, fork this repo, make your changes, and submit a pull request.
+
+
+Thank you.
